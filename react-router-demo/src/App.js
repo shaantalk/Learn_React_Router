@@ -1,5 +1,5 @@
+import React from "react";
 import { Routes, Route } from "react-router-dom";
-import { About } from "./components/About";
 import { Admin } from "./components/Admin";
 import { FeaturedProducts } from "./components/FeaturedProducts";
 import { Home } from "./components/Home";
@@ -11,6 +11,9 @@ import { Products } from "./components/Products";
 import { UserDetails } from "./components/UserDetails";
 import { Users } from "./components/Users";
 
+// import { About } from "./components/About";
+const LazyAbout = React.lazy(() => import("./components/About"));
+
 function App() {
   return (
     <>
@@ -18,7 +21,14 @@ function App() {
 
       <Routes>
         <Route path='/' element={<Home />} />
-        <Route path='about' element={<About />} />
+        <Route
+          path='about'
+          element={
+            <React.Suspense fallback='Loading...'>
+              <LazyAbout />
+            </React.Suspense>
+          }
+        />
         <Route path='order-summary' element={<OrderSummary />} />
         {/* Nested Route */}
         <Route path='products' element={<Products />}>
@@ -28,9 +38,10 @@ function App() {
           <Route path='new' element={<NewProducts />} />
         </Route>
         {/* Dynamic Route */}
-        <Route path='users' element={<Users />} />
-        <Route path='users/:userId' element={<UserDetails />} />
-        <Route path='users/admin' element={<Admin />} />
+        <Route path='users' element={<Users />}>
+          <Route path=':userId' element={<UserDetails />} />
+          <Route path='admin' element={<Admin />} />
+        </Route>
         {/* No Match Route */}
         <Route path='*' element={<NoMatch />} />
       </Routes>
